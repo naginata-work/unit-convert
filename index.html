@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit Converter / 単位換算ツール</title>
+<meta name="description" content="長さ・重さ・温度をまとめて換算。km⇔mile、kg⇔lb、℃⇔℉。">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4214020669195548"
+     crossorigin="anonymous"></script>
+<style>
+  :root {
+    --bg: #0f1512; --card: #19221d; --text: #eff5f1; --sub: #8fa89b;
+    --accent: #34d399; --accent2: #fbbf24; --border: #24322a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: "Hiragino Kaku Gothic ProN", "Segoe UI", Arial, sans-serif;
+    background: var(--bg); color: var(--text); padding: 16px;
+  }
+  .wrap { max-width: 460px; margin: 0 auto; }
+  .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .home-link { font-size: 22px; text-decoration: none; line-height: 1; }
+  .lang-btn { background: none; border: 1px solid var(--border); color: var(--sub); border-radius: 6px; padding: 4px 10px; font-size: 12px; cursor: pointer; }
+  h1 { font-size: 21px; text-align: center; margin: 4px 0 4px; }
+  .lead { text-align: center; color: var(--sub); font-size: 13px; margin-bottom: 18px; line-height: 1.6; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+  .tabs button {
+    flex: 1; padding: 9px; border: 1px solid var(--border); border-radius: 8px;
+    background: none; color: var(--sub); font-size: 13px; cursor: pointer;
+  }
+  .tabs button.active { background: var(--accent); color: #05201a; border-color: var(--accent); font-weight: bold; }
+  .row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  input[type="number"] { flex: 1; padding: 10px; font-size: 15px; border: 1px solid var(--border); border-radius: 8px; background: #10160f; color: var(--text); }
+  select { flex: 1; padding: 10px; font-size: 14px; border: 1px solid var(--border); border-radius: 8px; background: #10160f; color: var(--text); }
+  .swap-btn { background: none; border: 1px solid var(--border); color: var(--accent); border-radius: 8px; padding: 8px 10px; cursor: pointer; font-size: 16px; }
+  .result-box {
+    background: #10160f; border: 1px solid var(--border); border-radius: 10px; padding: 16px;
+    text-align: center; font-size: 24px; font-weight: bold; color: var(--accent2); margin-top: 8px;
+  }
+  .footer-links { text-align: center; font-size: 12px; color: var(--sub); margin-top: 4px; line-height: 1.8; }
+  .footer-links a { color: var(--accent2); text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top-row"><a href="https://naginata-work.github.io/" class="home-link" title="All tools">🧰</a><button class="lang-btn" id="langBtn">EN</button></div>
+  <h1 id="title">📏 単位換算ツール</h1>
+  <p class="lead" id="lead">長さ・重さ・温度をまとめて換算できます。</p>
+
+  <div class="card">
+    <div class="tabs">
+      <button id="tabLength" class="active"></button>
+      <button id="tabWeight"></button>
+      <button id="tabTemp"></button>
+    </div>
+
+    <div class="row">
+      <input type="number" id="amount" value="1">
+      <select id="fromUnit"></select>
+      <button class="swap-btn" id="swapBtn">⇄</button>
+      <select id="toUnit"></select>
+    </div>
+
+    <div class="result-box" id="result">-</div>
+  </div>
+
+  <p class="footer-links" id="footerLinks"></p>
+</div>
+
+<script>
+  const LEN = { km: 1000, m: 1, cm: 0.01, mm: 0.001, mile: 1609.344, yard: 0.9144, foot: 0.3048, inch: 0.0254 };
+  const WT = { kg: 1000, g: 1, mg: 0.001, lb: 453.59237, oz: 28.349523125 };
+  const UNIT_LABELS = {
+    km: 'km', m: 'm', cm: 'cm', mm: 'mm', mile: 'mile', yard: 'yard', foot: 'foot', inch: 'inch',
+    kg: 'kg', g: 'g', mg: 'mg', lb: 'lb', oz: 'oz', c: '°C', f: '°F', k: 'K'
+  };
+
+  function celsiusToUnit(c, unit) {
+    if (unit === 'c') return c;
+    if (unit === 'f') return c * 9 / 5 + 32;
+    if (unit === 'k') return c + 273.15;
+  }
+  function unitToCelsius(v, unit) {
+    if (unit === 'c') return v;
+    if (unit === 'f') return (v - 32) * 5 / 9;
+    if (unit === 'k') return v - 273.15;
+  }
+
+  const I18N = {
+    ja: {
+      title: '📏 単位換算ツール',
+      lead: '長さ・重さ・温度をまとめて換算できます。',
+      tabLength: '長さ', tabWeight: '重さ', tabTemp: '温度',
+      resultText: (a, ua, b, ub) => `${a} ${ua} = ${b} ${ub}`,
+      footerLinks: '他のツールも作っています → <a href="https://naginata-work.github.io/cook-convert/" target="_blank" rel="noopener">料理の単位換算</a> / <a href="https://naginata-work.github.io/percent-calc/" target="_blank" rel="noopener">パーセント計算機</a>'
+    },
+    en: {
+      title: '📏 Unit Converter',
+      lead: 'Convert length, weight, and temperature units instantly.',
+      tabLength: 'Length', tabWeight: 'Weight', tabTemp: 'Temperature',
+      resultText: (a, ua, b, ub) => `${a} ${ua} = ${b} ${ub}`,
+      footerLinks: 'Also made these → <a href="https://naginata-work.github.io/cook-convert/" target="_blank" rel="noopener">Cooking Unit Converter</a> / <a href="https://naginata-work.github.io/percent-calc/" target="_blank" rel="noopener">Percentage Calculator</a>'
+    }
+  };
+
+  function loadLang() { try { return localStorage.getItem('unitConvertLang'); } catch (e) { return null; } }
+  function saveLang(l) { try { localStorage.setItem('unitConvertLang', l); } catch (e) {} }
+  let lang = loadLang() === 'en' ? 'en' : 'ja';
+  function t() { return I18N[lang]; }
+
+  let category = 'length';
+
+  function unitsFor(cat) {
+    if (cat === 'length') return Object.keys(LEN);
+    if (cat === 'weight') return Object.keys(WT);
+    return ['c', 'f', 'k'];
+  }
+
+  function populateUnits() {
+    const units = unitsFor(category);
+    const fromSel = document.getElementById('fromUnit');
+    const toSel = document.getElementById('toUnit');
+    fromSel.innerHTML = units.map(u => `<option value="${u}">${UNIT_LABELS[u]}</option>`).join('');
+    toSel.innerHTML = units.map(u => `<option value="${u}">${UNIT_LABELS[u]}</option>`).join('');
+    fromSel.value = units[0];
+    toSel.value = units[1] || units[0];
+  }
+
+  function fmt(n) {
+    const r = Math.round(n * 10000) / 10000;
+    return r.toLocaleString(undefined, { maximumFractionDigits: 4 });
+  }
+
+  function calc() {
+    const amount = parseFloat(document.getElementById('amount').value);
+    const from = document.getElementById('fromUnit').value;
+    const to = document.getElementById('toUnit').value;
+    if (isNaN(amount)) { document.getElementById('result').textContent = '-'; return; }
+    let out;
+    if (category === 'length') out = amount * LEN[from] / LEN[to];
+    else if (category === 'weight') out = amount * WT[from] / WT[to];
+    else out = celsiusToUnit(unitToCelsius(amount, from), to);
+    document.getElementById('result').textContent = t().resultText(fmt(amount), UNIT_LABELS[from], fmt(out), UNIT_LABELS[to]);
+  }
+
+  document.getElementById('amount').addEventListener('input', calc);
+  document.getElementById('fromUnit').addEventListener('change', calc);
+  document.getElementById('toUnit').addEventListener('change', calc);
+  document.getElementById('swapBtn').addEventListener('click', () => {
+    const fromSel = document.getElementById('fromUnit');
+    const toSel = document.getElementById('toUnit');
+    const tmp = fromSel.value;
+    fromSel.value = toSel.value;
+    toSel.value = tmp;
+    calc();
+  });
+
+  function setCategory(cat, btnId) {
+    category = cat;
+    ['tabLength', 'tabWeight', 'tabTemp'].forEach(id => document.getElementById(id).classList.remove('active'));
+    document.getElementById(btnId).classList.add('active');
+    populateUnits();
+    calc();
+  }
+  document.getElementById('tabLength').addEventListener('click', () => setCategory('length', 'tabLength'));
+  document.getElementById('tabWeight').addEventListener('click', () => setCategory('weight', 'tabWeight'));
+  document.getElementById('tabTemp').addEventListener('click', () => setCategory('temp', 'tabTemp'));
+
+  function renderStaticText() {
+    document.getElementById('title').textContent = t().title;
+    document.getElementById('lead').textContent = t().lead;
+    document.getElementById('tabLength').textContent = t().tabLength;
+    document.getElementById('tabWeight').textContent = t().tabWeight;
+    document.getElementById('tabTemp').textContent = t().tabTemp;
+    document.getElementById('footerLinks').innerHTML = t().footerLinks;
+    calc();
+  }
+
+  document.getElementById('langBtn').addEventListener('click', () => {
+    lang = lang === 'ja' ? 'en' : 'ja';
+    saveLang(lang);
+    document.getElementById('langBtn').textContent = lang === 'ja' ? 'EN' : 'JA';
+    renderStaticText();
+  });
+
+  document.getElementById('langBtn').textContent = lang === 'ja' ? 'EN' : 'JA';
+  populateUnits();
+  renderStaticText();
+</script>
+</body>
+</html>
