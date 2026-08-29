@@ -65,7 +65,25 @@
     <div class="result-box" id="result">-</div>
   </div>
 
+  <div class="card" style="font-size:13px; line-height:1.9; color:var(--sub);">
+    <h2 id="aboutTitle" style="font-size:15px; color:var(--text); margin:0 0 8px;"></h2>
+    <p id="aboutBody1" style="margin:0 0 10px;"></p>
+    <p id="aboutBody2" style="margin:0;"></p>
+  </div>
+
+  <div class="card" style="font-size:13px; line-height:1.9; color:var(--sub);">
+    <h2 id="faqTitle" style="font-size:15px; color:var(--text); margin:0 0 10px;"></h2>
+    <p id="faq1Q" style="margin:0 0 4px; color:var(--text); font-weight:bold;"></p>
+    <p id="faq1A" style="margin:0 0 12px;"></p>
+    <p id="faq2Q" style="margin:0 0 4px; color:var(--text); font-weight:bold;"></p>
+    <p id="faq2A" style="margin:0;"></p>
+  </div>
+
   <p class="footer-links" id="footerLinks"></p>
+  <p style="text-align:center; font-size:11px; color:var(--sub); margin-top:4px;">
+    <a href="https://naginata-work.github.io/" style="color:var(--sub);" id="allToolsLink"></a> ・
+    <a href="https://naginata-work.github.io/privacy.html" style="color:var(--sub);" id="privacyLink"></a>
+  </p>
 </div>
 
 <script>
@@ -93,14 +111,30 @@
       lead: '長さ・重さ・温度をまとめて換算できます。',
       tabLength: '長さ', tabWeight: '重さ', tabTemp: '温度',
       resultText: (a, ua, b, ub) => `${a} ${ua} = ${b} ${ub}`,
-      footerLinks: '他のツールも作っています → <a href="https://naginata-work.github.io/cook-convert/" target="_blank" rel="noopener">料理の単位換算</a> / <a href="https://naginata-work.github.io/percent-calc/" target="_blank" rel="noopener">パーセント計算機</a>'
+      footerLinks: '他のツールも作っています → <a href="https://naginata-work.github.io/cook-convert/" target="_blank" rel="noopener">料理の単位換算</a> / <a href="https://naginata-work.github.io/percent-calc/" target="_blank" rel="noopener">パーセント計算機</a>',
+      aboutTitle: '料理用の単位換算との違い',
+      aboutBody1: '海外の記事や商品説明でマイル・ポンド・華氏といった単位を見かけても、日本で使うkm・kg・℃にすぐ変換できないと、距離感がつかめません。cook-convert(料理の材料換算専用)とは別に、こちらは長さ・重さ・温度という日常全般の単位を扱う専用ツールです。',
+      aboutBody2: '「長さ」「重さ」「温度」をタブで切り替え、数値を入力すると即座に変換結果が表示されます。⇄ボタンで単位を入れ替えれば、逆方向の換算もワンタップです。',
+      faqTitle: 'よくある質問',
+      faq1Q: '温度の変換だけ計算方法が違うのはなぜ?',
+      faq1A: '長さや重さは「単位ごとの倍率をかけるだけ」で変換できますが、温度(摂氏・華氏・ケルビン)は基準点がずれているため、単純な掛け算では変換できません。このツールは摂氏を基準に、それぞれの正しい変換式を使って計算しています。',
+      faq2Q: 'かなり細かい数値まで正確?',
+      faq2A: 'はい。内部では倍精度浮動小数点数で計算し、表示のみ小数点以下4桁に丸めています。日常的な用途はもちろん、多少精密な計算にも対応できます。',
     },
     en: {
       title: '📏 Unit Converter',
       lead: 'Convert length, weight, and temperature units instantly.',
       tabLength: 'Length', tabWeight: 'Weight', tabTemp: 'Temperature',
       resultText: (a, ua, b, ub) => `${a} ${ua} = ${b} ${ub}`,
-      footerLinks: 'Also made these → <a href="https://naginata-work.github.io/cook-convert/" target="_blank" rel="noopener">Cooking Unit Converter</a> / <a href="https://naginata-work.github.io/percent-calc/" target="_blank" rel="noopener">Percentage Calculator</a>'
+      footerLinks: 'Also made these → <a href="https://naginata-work.github.io/cook-convert/" target="_blank" rel="noopener">Cooking Unit Converter</a> / <a href="https://naginata-work.github.io/percent-calc/" target="_blank" rel="noopener">Percentage Calculator</a>',
+      aboutTitle: 'How this differs from the cooking converter',
+      aboutBody1: "Reading a foreign article or product listing in miles, pounds, or Fahrenheit doesn't mean much if you think in km, kg, and °C. Separate from the Cooking Unit Converter (built specifically for ingredient measurements), this tool covers everyday length, weight, and temperature conversions.",
+      aboutBody2: "Switch between Length, Weight, and Temperature tabs, and results update instantly as you type. Tap the ⇄ button to flip the units and convert in the other direction just as easily.",
+      faqTitle: 'FAQ',
+      faq1Q: 'Why does temperature use a different calculation than length or weight?',
+      faq1A: "Length and weight convert with a simple multiplier, but temperature scales (Celsius, Fahrenheit, Kelvin) don't share the same zero point, so a plain multiplication won't work. This tool converts through Celsius using the correct formula for each scale.",
+      faq2Q: 'How precise are the results?',
+      faq2A: "Calculations run at full double-precision internally and are only rounded for display, to 4 decimal places — accurate enough for both everyday use and more precise needs.",
     }
   };
 
@@ -174,6 +208,18 @@
     document.getElementById('tabWeight').textContent = t().tabWeight;
     document.getElementById('tabTemp').textContent = t().tabTemp;
     document.getElementById('footerLinks').innerHTML = t().footerLinks;
+    document.getElementById('aboutTitle').textContent = t().aboutTitle;
+    document.getElementById('aboutBody1').textContent = t().aboutBody1;
+    document.getElementById('aboutBody2').textContent = t().aboutBody2;
+    document.getElementById('faqTitle').textContent = t().faqTitle;
+    document.getElementById('faq1Q').textContent = t().faq1Q;
+    document.getElementById('faq1A').textContent = t().faq1A;
+    document.getElementById('faq2Q').textContent = t().faq2Q;
+    document.getElementById('faq2A').textContent = t().faq2A;
+    document.getElementById('allToolsLink').textContent = lang === 'ja' ? '他のツール一覧' : 'All tools';
+    document.getElementById('allToolsLink').href = 'https://naginata-work.github.io/';
+    document.getElementById('privacyLink').textContent = lang === 'ja' ? 'プライバシーポリシー' : 'Privacy policy';
+    document.getElementById('privacyLink').href = 'https://naginata-work.github.io/privacy.html';
     calc();
   }
 
